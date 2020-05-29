@@ -1,0 +1,82 @@
+import tweepy
+import os
+import playsound
+import speech_recognition as sr
+from gtts import gTTS
+import tweepy
+import time
+from array import array
+
+import tkinter as tk
+from tkinter import filedialog, Text
+import os
+
+from tweepy.streaming import StreamListener
+from tweepy import Stream
+from tweepy import OAuthHandler
+
+import keyboard
+
+import TwitterCredentials
+import string
+import random
+#
+if keyboard.is_pressed('0'):
+    print('you pressed 0')
+    breakpoint
+
+
+def randomString(stringLenght=4):
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters)for i in range(stringLenght))
+
+print("Your random string is", randomString())#gets a new string everytime
+
+
+def speak(self):
+    tts = gTTS(text=self, lang="en", slow=False)
+    filename ="voice.mp3"
+    tts.save(filename)
+    playsound.playsound(filename)
+    os.remove("voice.mp3")
+    
+
+class StdOutListener(StreamListener):
+    def on_data(self, data):
+        
+        tweet = data.split(',"text":"')[1].split('","source')[0]
+        user = data.split(',"name":"')[1].split('","screen_name')[0]#add one more split, it bugges out some times
+        #speak(self=tweet)
+        print(user ,"said" ,tweet)
+        speak(self=str(user) +"Said"+ str(tweet))   
+        
+    def on_error(self, status):
+        print(status)
+        
+    
+
+if __name__ == "__main__":
+    
+    listener = StdOutListener()
+    auth = tweepy.OAuthHandler(TwitterCredentials.consumer_key, TwitterCredentials.consumer_secret)
+    auth.set_access_token(TwitterCredentials.access_token, TwitterCredentials.access_token_secret)
+
+    stream = Stream(auth, listener)
+    stream.filter(track=["ddf45"])
+
+#root = tk.Tk()
+
+#canvas = tk.Canvas(root, height=700, width=700, bg="#263D42")
+#canvas.pack()
+
+#frame = tk.Frame(root, bg="white")
+#frame.place(relwidth=0.9, relheight=0.9, relx=0.1, rely=0.1)
+
+#openfile = tk.Button(root, text="Open File", padx=10, pady=5, fg="white", bg="#263D42")
+#openfile.pack()
+
+#runApps = tk.Button(root, text="Runn Aps", padx=10, pady=5, fg="white", bg="#263D42")
+
+#root.mainloop()
+#runApps.pack()
+#openfile.pack()
